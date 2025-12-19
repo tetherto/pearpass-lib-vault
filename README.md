@@ -170,7 +170,7 @@ function RecordManager({ vaultId }) {
 
 ### Peer Dependencies
 - [react](https://reactjs.org/)
-- [react-edux](https://react-redux.js.org/)
+- [react-redux](https://react-redux.js.org/)
 - [redux-toolkit](https://redux-toolkit.js.org/)
 
 ## Related Projects
