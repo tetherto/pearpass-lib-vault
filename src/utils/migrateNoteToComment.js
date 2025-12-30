@@ -17,21 +17,6 @@
  * @returns {string|undefined} The migrated comment value
  */
 export const migrateNoteToComment = (data) => {
-  if (data === null || data === undefined) {
-    return undefined
-  }
-
-  // If comment field exists (new format), use it
-  if (data.comment !== undefined) {
-    return data.comment
-  }
-
-  // If only note field exists (legacy format), migrate it
-  if (data.note !== undefined) {
-    return data.note
-  }
-
-  // Neither field exists
-  return undefined
+  return data?.comment ?? data?.note ?? undefined;
 }
 
