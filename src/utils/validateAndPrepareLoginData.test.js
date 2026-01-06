@@ -23,7 +23,7 @@ const mockCredential = {
       rk: true
     }
   },
-  _privateKey:
+  _privateKeyBuffer:
     'MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgjB33PY-3v-zhNl2CqFQX-i2pwSMr9E1rTJIqu2nZ1BahRANCAAQydwL4HdpaRWXF-PwivYbEu-82OyhnrWWiHdxqILAovvsncojWMjSs_xjEC33S-hQ2Jl8Togw6FbH9Bq5Awbjs',
   _userId: 'QND9iRzfLqxSDIoB4711RRLXqwISKDmxryYVLW_sEbY'
 }

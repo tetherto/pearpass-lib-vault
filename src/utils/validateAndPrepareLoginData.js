@@ -24,7 +24,7 @@ export const credentialSchema = Validator.object({
     transports: Validator.array().items(Validator.string()).required()
   }).required(),
   type: Validator.string().required(),
-  _privateKey: Validator.string().required(),
+  _privateKeyBuffer: Validator.string().required(),
   _userId: Validator.string().required()
 })
 
