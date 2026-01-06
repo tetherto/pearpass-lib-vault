@@ -5,6 +5,7 @@ import {
   validateAndPrepareCustomFields
 } from './validateAndPrepareCustomFields'
 import { fileSchema } from '../schemas/fileSchema'
+import { migrateNoteToComment } from './migrateNoteToComment'
 
 export const credentialSchema = Validator.object({
   authenticatorAttachment: Validator.string().required(),
@@ -34,7 +35,7 @@ export const loginSchema = Validator.object({
   password: Validator.string(),
   passwordUpdatedAt: Validator.number(),
   credential: credentialSchema,
-  note: Validator.string(),
+  comment: Validator.string(),
   websites: Validator.array().items(Validator.string().required()),
   customFields: Validator.array().items(customFieldSchema),
   attachments: Validator.array().items(fileSchema)
@@ -47,7 +48,7 @@ export const validateAndPrepareLoginData = (login) => {
     password: login.password,
     passwordUpdatedAt: login.passwordUpdatedAt,
     credential: login.credential,
-    note: login.note,
+    comment: migrateNoteToComment(login),
     websites: login.websites,
     customFields: validateAndPrepareCustomFields(login.customFields),
     attachments: login.attachments

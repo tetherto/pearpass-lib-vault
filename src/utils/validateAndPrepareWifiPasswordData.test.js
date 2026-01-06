@@ -14,7 +14,7 @@ describe('validateAndPrepareWifiPasswordData', () => {
     const wifiPasswordData = {
       title: 'My WiFi Network',
       password: 'wifi123456',
-      note: 'This is my home WiFi',
+      comment: 'This is my home WiFi',
       customFields: [{ name: 'SSID', value: 'MyNetwork', type: 'text' }]
     }
 
@@ -30,7 +30,7 @@ describe('validateAndPrepareWifiPasswordData', () => {
     expect(result).toEqual({
       title: 'My WiFi Network',
       password: 'wifi123456',
-      note: 'This is my home WiFi',
+      comment: 'This is my home WiFi',
       customFields: [{ name: 'SSID', value: 'MyNetwork', type: 'text' }]
     })
   })
@@ -48,7 +48,7 @@ describe('validateAndPrepareWifiPasswordData', () => {
     expect(result).toEqual({
       title: 'Basic WiFi',
       password: 'password123',
-      note: undefined,
+      comment: undefined,
       customFields: []
     })
   })
@@ -57,7 +57,7 @@ describe('validateAndPrepareWifiPasswordData', () => {
     const wifiPasswordData = {
       title: 'WiFi Network',
       password: 'password123',
-      note: 'Network description',
+      comment: 'Network description',
       customFields: []
     }
 
@@ -69,7 +69,7 @@ describe('validateAndPrepareWifiPasswordData', () => {
     expect(result).toEqual({
       title: 'WiFi Network',
       password: 'password123',
-      note: 'Network description',
+      comment: 'Network description',
       customFields: []
     })
   })
@@ -78,7 +78,7 @@ describe('validateAndPrepareWifiPasswordData', () => {
     const wifiPasswordData = {
       title: 'WiFi Network',
       password: 'password123',
-      note: 'Network description',
+      comment: 'Network description',
       customFields: null
     }
 
@@ -90,7 +90,7 @@ describe('validateAndPrepareWifiPasswordData', () => {
     expect(result).toEqual({
       title: 'WiFi Network',
       password: 'password123',
-      note: 'Network description',
+      comment: 'Network description',
       customFields: []
     })
   })
@@ -146,5 +146,37 @@ describe('validateAndPrepareWifiPasswordData', () => {
     expect(() => validateAndPrepareWifiPasswordData(wifiPasswordData)).toThrow(
       'Invalid wifi password data'
     )
+  })
+
+  describe('note to comment migration', () => {
+    test('should migrate legacy note field to comment', () => {
+      const wifiPasswordData = {
+        title: 'My WiFi',
+        password: 'password123',
+        note: 'This is a legacy note'
+      }
+
+      validateAndPrepareCustomFields.mockReturnValue([])
+
+      const result = validateAndPrepareWifiPasswordData(wifiPasswordData)
+
+      expect(result.comment).toBe('This is a legacy note')
+      expect(result.note).toBeUndefined()
+    })
+
+    test('should prefer comment over note when both exist', () => {
+      const wifiPasswordData = {
+        title: 'My WiFi',
+        password: 'password123',
+        note: 'Legacy note',
+        comment: 'New comment'
+      }
+
+      validateAndPrepareCustomFields.mockReturnValue([])
+
+      const result = validateAndPrepareWifiPasswordData(wifiPasswordData)
+
+      expect(result.comment).toBe('New comment')
+    })
   })
 })

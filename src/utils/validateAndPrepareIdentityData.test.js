@@ -19,7 +19,7 @@ describe('validateAndPrepareIdentityData', () => {
     city: 'New York',
     region: 'NY',
     country: 'USA',
-    note: 'Some notes',
+    comment: 'Some comments',
     customFields: []
   }
 
@@ -73,5 +73,31 @@ describe('validateAndPrepareIdentityData', () => {
 
     expect(validateAndPrepareCustomFields).toHaveBeenCalledWith(customFields)
     expect(result.customFields).toEqual(['processed fields'])
+  })
+
+  describe('note to comment migration', () => {
+    it('should migrate legacy note field to comment', () => {
+      const identityWithNote = {
+        title: 'Personal',
+        note: 'This is a legacy note'
+      }
+
+      const result = validateAndPrepareIdentityData(identityWithNote)
+
+      expect(result.comment).toBe('This is a legacy note')
+      expect(result.note).toBeUndefined()
+    })
+
+    it('should prefer comment over note when both exist', () => {
+      const identityWithBoth = {
+        title: 'Personal',
+        note: 'Legacy note',
+        comment: 'New comment'
+      }
+
+      const result = validateAndPrepareIdentityData(identityWithBoth)
+
+      expect(result.comment).toBe('New comment')
+    })
   })
 })

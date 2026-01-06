@@ -14,7 +14,7 @@ describe('validateAndPreparePassPhraseData', () => {
     const passPhraseData = {
       title: 'My Passphrase',
       passPhrase: 'correct horse battery staple',
-      note: 'This is my secure passphrase',
+      comment: 'This is my secure passphrase',
       customFields: [{ name: 'Category', value: 'Security', type: 'text' }]
     }
 
@@ -30,7 +30,7 @@ describe('validateAndPreparePassPhraseData', () => {
     expect(result).toEqual({
       title: 'My Passphrase',
       passPhrase: 'correct horse battery staple',
-      note: 'This is my secure passphrase',
+      comment: 'This is my secure passphrase',
       customFields: [{ name: 'Category', value: 'Security', type: 'text' }]
     })
   })
@@ -48,7 +48,7 @@ describe('validateAndPreparePassPhraseData', () => {
     expect(result).toEqual({
       title: 'Basic Passphrase',
       passPhrase: 'simple passphrase',
-      note: undefined,
+      comment: undefined,
       customFields: []
     })
   })
@@ -57,7 +57,7 @@ describe('validateAndPreparePassPhraseData', () => {
     const passPhraseData = {
       title: 'Passphrase',
       passPhrase: 'my passphrase',
-      note: 'Passphrase description',
+      comment: 'Passphrase description',
       customFields: null
     }
 
@@ -69,7 +69,7 @@ describe('validateAndPreparePassPhraseData', () => {
     expect(result).toEqual({
       title: 'Passphrase',
       passPhrase: 'my passphrase',
-      note: 'Passphrase description',
+      comment: 'Passphrase description',
       customFields: []
     })
   })
@@ -125,5 +125,37 @@ describe('validateAndPreparePassPhraseData', () => {
     expect(() => validateAndPreparePassPhraseData(passPhraseData)).toThrow(
       'Invalid pass phrase data'
     )
+  })
+
+  describe('note to comment migration', () => {
+    test('should migrate legacy note field to comment', () => {
+      const passPhraseData = {
+        title: 'My Passphrase',
+        passPhrase: 'correct horse battery staple',
+        note: 'This is a legacy note'
+      }
+
+      validateAndPrepareCustomFields.mockReturnValue([])
+
+      const result = validateAndPreparePassPhraseData(passPhraseData)
+
+      expect(result.comment).toBe('This is a legacy note')
+      expect(result.note).toBeUndefined()
+    })
+
+    test('should prefer comment over note when both exist', () => {
+      const passPhraseData = {
+        title: 'My Passphrase',
+        passPhrase: 'correct horse battery staple',
+        note: 'Legacy note',
+        comment: 'New comment'
+      }
+
+      validateAndPrepareCustomFields.mockReturnValue([])
+
+      const result = validateAndPreparePassPhraseData(passPhraseData)
+
+      expect(result.comment).toBe('New comment')
+    })
   })
 })

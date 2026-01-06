@@ -43,7 +43,7 @@ describe('validateAndPrepareLoginData', () => {
       username: 'user123',
       password: 'password123',
       credential: mockCredential,
-      note: 'This is a note',
+      comment: 'This is a comment',
       websites: ['https://example.com'],
       customFields: [{ name: 'field1', value: 'value1', type: 'text' }]
     }
@@ -69,7 +69,7 @@ describe('validateAndPrepareLoginData', () => {
       username: undefined,
       password: undefined,
       credential: undefined,
-      note: undefined,
+      comment: undefined,
       websites: ['https://example.com'],
       customFields: []
     })
@@ -114,7 +114,7 @@ describe('validateAndPrepareLoginData', () => {
       username: null,
       password: undefined,
       credential: null,
-      note: null,
+      comment: null,
       websites: ['https://example.com'],
       customFields: null
     }
@@ -126,9 +126,49 @@ describe('validateAndPrepareLoginData', () => {
       username: null,
       password: undefined,
       credential: null,
-      note: null,
+      comment: null,
       websites: ['https://example.com'],
       customFields: []
+    })
+  })
+
+  describe('note to comment migration', () => {
+    test('should migrate legacy note field to comment', () => {
+      const loginData = {
+        title: 'My Login',
+        note: 'This is a legacy note',
+        websites: ['https://example.com']
+      }
+
+      const result = validateAndPrepareLoginData(loginData)
+
+      expect(result.comment).toBe('This is a legacy note')
+      expect(result.note).toBeUndefined()
+    })
+
+    test('should prefer comment over note when both exist', () => {
+      const loginData = {
+        title: 'My Login',
+        note: 'Legacy note',
+        comment: 'New comment',
+        websites: ['https://example.com']
+      }
+
+      const result = validateAndPrepareLoginData(loginData)
+
+      expect(result.comment).toBe('New comment')
+    })
+
+    test('should handle empty legacy note', () => {
+      const loginData = {
+        title: 'My Login',
+        note: '',
+        websites: ['https://example.com']
+      }
+
+      const result = validateAndPrepareLoginData(loginData)
+
+      expect(result.comment).toBe('')
     })
   })
 })
