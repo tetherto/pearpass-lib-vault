@@ -6,6 +6,7 @@ import { initializeUser } from '../actions/initializeUser'
 import { createMasterPassword as createMasterPasswordApi } from '../api/createMasterPassword'
 import { init } from '../api/init'
 import { updateMasterPassword as updateMasterPasswordApi } from '../api/updateMasterPassword'
+import { stringToBuffer } from '../utils/buffer'
 
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
@@ -93,21 +94,29 @@ describe('useUserData', () => {
   test('logIn should call init and setLoading with password', async () => {
     const { result } = renderHook(() => useUserData())
 
+    const passwordBuffer = stringToBuffer('password123')
     await act(async () => {
-      await result.current.logIn({ password: 'password123' })
+      await result.current.logIn({ password: passwordBuffer })
     })
 
-    expect(init).toHaveBeenCalledWith({ password: 'password123' })
+    // Verify init was called with the password buffer
+    expect(init).toHaveBeenCalled()
+    const callArgs = init.mock.calls[0][0]
+    expect(callArgs.password).toBe(passwordBuffer)
   })
 
   test('createMasterPassword should call API and setLoading', async () => {
     const { result } = renderHook(() => useUserData())
 
+    const passwordBuffer = stringToBuffer('password123')
     await act(async () => {
-      await result.current.createMasterPassword('password123')
+      await result.current.createMasterPassword(passwordBuffer)
     })
 
-    expect(createMasterPasswordApi).toHaveBeenCalledWith('password123')
+    // Verify API was called with the buffer
+    expect(createMasterPasswordApi).toHaveBeenCalled()
+    const callArgs = createMasterPasswordApi.mock.calls[0][0]
+    expect(callArgs).toBe(passwordBuffer)
   })
 
   test('logIn should call init and setLoading with encryption fields', async () => {
@@ -133,16 +142,19 @@ describe('useUserData', () => {
   test('updateMasterPassword should call API and setLoading', async () => {
     const { result } = renderHook(() => useUserData())
 
+    const newPasswordBuffer = stringToBuffer('newPassword123')
+    const currentPasswordBuffer = stringToBuffer('currentPassword123')
     await act(async () => {
       await result.current.updateMasterPassword({
-        newPassword: 'newPassword123',
-        currentPassword: 'currentPassword123'
+        newPassword: newPasswordBuffer,
+        currentPassword: currentPasswordBuffer
       })
     })
 
-    expect(updateMasterPasswordApi).toHaveBeenCalledWith({
-      newPassword: 'newPassword123',
-      currentPassword: 'currentPassword123'
-    })
+    // Verify API was called with the buffers
+    expect(updateMasterPasswordApi).toHaveBeenCalled()
+    const callArgs = updateMasterPasswordApi.mock.calls[0][0]
+    expect(callArgs.newPassword).toBe(newPasswordBuffer)
+    expect(callArgs.currentPassword).toBe(currentPasswordBuffer)
   })
 })

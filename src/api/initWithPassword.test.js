@@ -1,5 +1,6 @@
 import { initWithPassword } from './initWithPassword'
 import { pearpassVaultClient } from '../instances'
+import { stringToBuffer } from '../utils/buffer'
 
 jest.mock('../instances', () => ({
   pearpassVaultClient: {
@@ -32,7 +33,8 @@ describe('initWithPassword', () => {
     })
     pearpassVaultClient.getDecryptionKey.mockResolvedValue('hashed')
 
-    const result = await initWithPassword({ password: 'pass' })
+    const passwordBuffer = stringToBuffer('pass')
+    const result = await initWithPassword({ password: passwordBuffer })
     expect(result).toBe(true)
     expect(pearpassVaultClient.vaultsGetStatus).toHaveBeenCalled()
     expect(pearpassVaultClient.vaultsGet).toHaveBeenCalledWith(
@@ -40,7 +42,7 @@ describe('initWithPassword', () => {
     )
     expect(pearpassVaultClient.getDecryptionKey).toHaveBeenCalledWith({
       salt: 'salt',
-      password: 'pass'
+      password: passwordBuffer
     })
   })
 
@@ -52,7 +54,9 @@ describe('initWithPassword', () => {
     })
     pearpassVaultClient.getDecryptionKey.mockResolvedValue('wrong')
 
-    await expect(initWithPassword({ password: 'pass' })).rejects.toThrow(
+    await expect(
+      initWithPassword({ password: stringToBuffer('pass') })
+    ).rejects.toThrow(
       'Provided credentials do not match existing master encryption'
     )
   })
@@ -70,7 +74,7 @@ describe('initWithPassword', () => {
     pearpassVaultClient.decryptVaultKey.mockResolvedValue('vaultKey')
     pearpassVaultClient.vaultsInit.mockResolvedValue()
 
-    const result = await initWithPassword({ password: 'pass' })
+    const result = await initWithPassword({ password: stringToBuffer('pass') })
     expect(result).toBe(true)
     expect(pearpassVaultClient.encryptionInit).toHaveBeenCalled()
     expect(pearpassVaultClient.vaultsInit).toHaveBeenCalledWith('vaultKey')
@@ -87,8 +91,8 @@ describe('initWithPassword', () => {
     pearpassVaultClient.getDecryptionKey.mockResolvedValue('hashed')
     pearpassVaultClient.decryptVaultKey.mockResolvedValue(null)
 
-    await expect(initWithPassword({ password: 'pass' })).rejects.toThrow(
-      'Error decrypting vault key'
-    )
+    await expect(
+      initWithPassword({ password: stringToBuffer('pass') })
+    ).rejects.toThrow('Error decrypting vault key')
   })
 })

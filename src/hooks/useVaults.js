@@ -20,7 +20,7 @@ import { selectVaults } from '../selectors/selectVaults'
  *      nonce?: string
  *      salt?: string
  *      hashedPassword?: string
- *      password?: string
+ *      password?: Uint8Array
  *    }) => Promise<void>
  *    resetState: () => void
  *  }}

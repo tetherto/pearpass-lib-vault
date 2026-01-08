@@ -5,7 +5,7 @@ import { listVaults } from './listVaults'
 /**
  * @param {string} vaultId
  * @param {Object} [params]
- * @param {string} [params.password]
+ * @param {Uint8Array} [params.password]
  * @param {string} [params.ciphertext]
  * @param {string} [params.nonce]
  * @param {string} [params.hashedPassword]
@@ -46,7 +46,7 @@ export const getVaultById = async (vaultId, params) => {
     return newVault
   }
 
-  if (!params?.password?.length) {
+  if (!params?.password || params.password.length === 0) {
     const masterEncryption = await getMasterPasswordEncryption()
 
     encryptionKey = await pearpassVaultClient.decryptVaultKey({
@@ -64,7 +64,7 @@ export const getVaultById = async (vaultId, params) => {
     const { ciphertext, nonce, salt } = vault.encryption || {}
 
     const hashedPassword = await pearpassVaultClient.getDecryptionKey({
-      password: params?.password,
+      password: params.password,
       salt
     })
 

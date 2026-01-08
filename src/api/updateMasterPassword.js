@@ -2,7 +2,7 @@ import { pearpassVaultClient } from '../instances'
 import { getMasterPasswordEncryption } from './getMasterPasswordEncryption'
 
 /**
- * @param {{password: string, currentPassword: string}} porps
+ * @param {{newPassword: Uint8Array, currentPassword: Uint8Array}} params
  * @returns {Promise<{
  *   hashedPassword: string
  *   salt: string
@@ -63,7 +63,7 @@ export const updateMasterPassword = async ({
 }
 
 /**
- * @param {string} currentPassword
+ * @param {Buffer | Uint8Array} currentPassword
  * @returns {Promise<string>}
  * @throws {Error} If the current password is invalid
  */

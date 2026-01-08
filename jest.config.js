@@ -7,5 +7,8 @@ export default {
   transformIgnorePatterns: [
     'node_modules/(?!(pear-apps-utils-validator|pear-apps-utils-pattern-search)/)'
   ],
-  setupFilesAfterEnv: ['./jest.setup.js']
+  setupFilesAfterEnv: ['./jest.setup.js'],
+  testEnvironmentOptions: {
+    customExportConditions: ['node', 'node-addons']
+  }
 }

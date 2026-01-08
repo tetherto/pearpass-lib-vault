@@ -2,7 +2,7 @@ import { pearpassVaultClient } from '../instances'
 
 /**
  * @param {{
- *   password: string
+ *   password: Uint8Array
  * }} params
  * @returns {Promise<boolean>}
  */
@@ -10,6 +10,8 @@ export const initWithPassword = async (params) => {
   if (!params.password) {
     throw new Error('Password is required')
   }
+
+  const password = params.password
 
   const res = await pearpassVaultClient.vaultsGetStatus()
 
@@ -19,7 +21,7 @@ export const initWithPassword = async (params) => {
 
     const hashedPassword = await pearpassVaultClient.getDecryptionKey({
       salt: masterEncryptionGetRes.salt,
-      password: params.password
+      password
     })
 
     if (masterEncryptionGetRes.hashedPassword !== hashedPassword) {
@@ -44,7 +46,7 @@ export const initWithPassword = async (params) => {
 
   const hashedPassword = await pearpassVaultClient.getDecryptionKey({
     salt,
-    password: params.password
+    password
   })
 
   const decryptVaultKeyRes = await pearpassVaultClient.decryptVaultKey({

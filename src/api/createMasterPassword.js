@@ -1,7 +1,7 @@
 import { pearpassVaultClient } from '../instances'
 
 /**
- * @param {string} password
+ * @param {Uint8Array} passwordBuffer
  * @returns {Promise<{
  *   ciphertext: string
  *   nonce: string
@@ -9,7 +9,7 @@ import { pearpassVaultClient } from '../instances'
  *   hashedPassword: string
  * }>}
  */
-export const createMasterPassword = async (password) => {
+export const createMasterPassword = async (passwordBuffer) => {
   const statusRes = await pearpassVaultClient.encryptionGetStatus()
 
   if (!statusRes?.status) {
@@ -24,7 +24,7 @@ export const createMasterPassword = async (password) => {
   }
 
   const { hashedPassword, salt } =
-    await pearpassVaultClient.hashPassword(password)
+    await pearpassVaultClient.hashPassword(passwordBuffer)
 
   const { ciphertext, nonce } =
     await pearpassVaultClient.encryptVaultKeyWithHashedPassword(hashedPassword)

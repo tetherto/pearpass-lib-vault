@@ -2,12 +2,18 @@ import { initWithCredentials } from './initWithCredentials'
 import { initWithPassword } from './initWithPassword'
 
 /**
- * @param {{
+ * Initialize vault with either credentials or password
+ * @param {({
  *   ciphertext: string
  *   nonce: string
  *   hashedPassword: string
- *   password: string
- * }} params
+ *   password?: undefined
+ * } | {
+ *   password: Uint8Array
+ *   ciphertext?: undefined
+ *   nonce?: undefined
+ *   hashedPassword?: undefined
+ * })} params
  * @returns {Promise<boolean>}
  */
 export const init = async (params) => {

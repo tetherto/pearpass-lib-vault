@@ -6,6 +6,7 @@ import { createMasterPassword as createMasterPasswordApi } from '../api/createMa
 import { init } from '../api/init'
 import { updateMasterPassword as updateMasterPasswordApi } from '../api/updateMasterPassword'
 import { selectUser } from '../selectors/selectUser'
+import { clearBuffer } from '../utils/buffer'
 
 /**
  * @returns {{
@@ -32,17 +33,17 @@ import { selectUser } from '../selectors/selectUser'
  *    nonce?: string
  *    salt?: string
  *    hashedPassword?: string
- *    password?: string
+ *    password?: Uint8Array
  *  }) => Promise<void>
- *  createMasterPassword: (password: string) => Promise<{
+ *  createMasterPassword: (password: Uint8Array) => Promise<{
  *   ciphertext: string
  *   nonce: string
  *   salt: string
  *   hashedPassword: string
  *    }>
  *  updateMasterPassword: ({
- *    newPassword: string
- *    currentPassword: string
+ *    newPassword: Uint8Array
+ *    currentPassword: Uint8Array
  *  }) => Promise<{
  *    ciphertext: string
  *    nonce: string
@@ -65,28 +66,27 @@ export const useUserData = () => {
   const { isLoading, isInitialized, data: userData } = useSelector(selectUser)
   const dispatch = useDispatch()
 
-  const logIn = async ({ ciphertext, nonce, salt, hashedPassword, password }) =>
-    init({
-      ciphertext,
-      nonce,
-      salt,
-      hashedPassword,
-      password
-    })
+  const logIn = async ({ ciphertext, nonce, hashedPassword, password }) =>
+    init({ ciphertext, nonce, hashedPassword, password })
 
   const createMasterPassword = async (password) => {
-    const result = await createMasterPasswordApi(password)
-
-    return result
+    try {
+      return await createMasterPasswordApi(password)
+    } finally {
+      clearBuffer(password)
+    }
   }
 
   const updateMasterPassword = async ({ newPassword, currentPassword }) => {
-    const result = await updateMasterPasswordApi({
-      newPassword,
-      currentPassword
-    })
-
-    return result
+    try {
+      return await updateMasterPasswordApi({
+        newPassword,
+        currentPassword
+      })
+    } finally {
+      clearBuffer(newPassword)
+      clearBuffer(currentPassword)
+    }
   }
 
   const refetch = async () => {
@@ -108,7 +108,6 @@ export const useUserData = () => {
     isLoading,
     logIn,
     createMasterPassword,
-    updateMasterPassword,
     updateMasterPassword,
     refetch,
     refreshMasterPasswordStatus

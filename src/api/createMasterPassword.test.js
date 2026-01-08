@@ -1,5 +1,6 @@
 import { createMasterPassword } from './createMasterPassword'
 import { pearpassVaultClient } from '../instances'
+import { stringToBuffer } from '../utils/buffer'
 
 jest.mock('../instances', () => ({
   pearpassVaultClient: {
@@ -34,7 +35,7 @@ describe('createMasterPassword', () => {
       nonce: 'nonce'
     })
 
-    await createMasterPassword('testPassword')
+    await createMasterPassword(stringToBuffer('testPassword'))
 
     expect(pearpassVaultClient.encryptionInit).toHaveBeenCalled()
   })
@@ -53,7 +54,7 @@ describe('createMasterPassword', () => {
       nonce: 'nonce'
     })
 
-    await createMasterPassword('testPassword')
+    await createMasterPassword(stringToBuffer('testPassword'))
 
     expect(pearpassVaultClient.encryptionInit).not.toHaveBeenCalled()
   })
@@ -64,9 +65,9 @@ describe('createMasterPassword', () => {
     })
     pearpassVaultClient.encryptionGet.mockResolvedValue({ existingData: true })
 
-    await expect(createMasterPassword('testPassword')).rejects.toThrow(
-      'Master password already exists'
-    )
+    await expect(
+      createMasterPassword(stringToBuffer('testPassword'))
+    ).rejects.toThrow('Master password already exists')
 
     expect(pearpassVaultClient.hashPassword).not.toHaveBeenCalled()
   })
@@ -95,10 +96,11 @@ describe('createMasterPassword', () => {
       nonce: mockEncryptionResult.nonce
     })
 
-    await createMasterPassword('testPassword')
+    const passwordBuffer = stringToBuffer('testPassword')
+    await createMasterPassword(passwordBuffer)
 
     expect(pearpassVaultClient.hashPassword).toHaveBeenCalledWith(
-      'testPassword'
+      passwordBuffer
     )
     expect(pearpassVaultClient.vaultsAdd).toHaveBeenCalledWith(
       'masterEncryption',

@@ -8,7 +8,7 @@ import { logger } from '../utils/logger'
 /**
  * @param {string} vaultId
  * @param {Object} [params]
- * @param {string} [params.password]
+ * @param {Uint8Array} [params.password]
  * @param {string} [params.ciphertext]
  * @param {string} [params.nonce]
  * @param {string} [params.hashedPassword]
