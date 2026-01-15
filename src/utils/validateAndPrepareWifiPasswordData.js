@@ -4,11 +4,12 @@ import {
   customFieldSchema,
   validateAndPrepareCustomFields
 } from './validateAndPrepareCustomFields'
+import { migrateNoteToComment } from './migrateNoteToComment'
 
 export const wifiPasswordSchema = Validator.object({
   title: Validator.string().required(),
   password: Validator.string().required(),
-  note: Validator.string(),
+  comment: Validator.string(),
   customFields: Validator.array().items(customFieldSchema)
 })
 
@@ -16,7 +17,7 @@ export const validateAndPrepareWifiPasswordData = (wifiPassword) => {
   const wifiPasswordData = {
     title: wifiPassword.title,
     password: wifiPassword.password,
-    note: wifiPassword.note,
+    comment: migrateNoteToComment(wifiPassword),
     customFields: validateAndPrepareCustomFields(wifiPassword.customFields)
   }
 

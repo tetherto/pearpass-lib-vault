@@ -18,7 +18,7 @@ describe('validateAndPrepareCreditCardData', () => {
       expireDate: '12/25',
       securityCode: '123',
       pinCode: '1234',
-      note: 'Personal use only',
+      comment: 'Personal use only',
       customFields: [{ key: 'issuer', value: 'Visa' }]
     }
 
@@ -44,7 +44,7 @@ describe('validateAndPrepareCreditCardData', () => {
       expireDate: undefined,
       securityCode: undefined,
       pinCode: undefined,
-      note: undefined,
+      comment: undefined,
       customFields: []
     })
     expect(validateAndPrepareCustomFields).toHaveBeenCalledWith(undefined)
@@ -70,5 +70,31 @@ describe('validateAndPrepareCreditCardData', () => {
     validateAndPrepareCreditCardData(mockCreditCard)
 
     expect(validateAndPrepareCustomFields).toHaveBeenCalledWith(customFields)
+  })
+
+  describe('note to comment migration', () => {
+    it('should migrate legacy note field to comment', () => {
+      const creditCardWithNote = {
+        title: 'My Credit Card',
+        note: 'This is a legacy note'
+      }
+
+      const result = validateAndPrepareCreditCardData(creditCardWithNote)
+
+      expect(result.comment).toBe('This is a legacy note')
+      expect(result.note).toBeUndefined()
+    })
+
+    it('should prefer comment over note when both exist', () => {
+      const creditCardWithBoth = {
+        title: 'My Credit Card',
+        note: 'Legacy note',
+        comment: 'New comment'
+      }
+
+      const result = validateAndPrepareCreditCardData(creditCardWithBoth)
+
+      expect(result.comment).toBe('New comment')
+    })
   })
 })
