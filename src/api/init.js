@@ -1,3 +1,4 @@
+import { pearpassVaultClient } from '../instances'
 import { initWithCredentials } from './initWithCredentials'
 import { initWithPassword } from './initWithPassword'
 
@@ -17,19 +18,22 @@ import { initWithPassword } from './initWithPassword'
  * @returns {Promise<boolean>}
  */
 export const init = async (params) => {
+  let result
+
   if (params?.ciphertext && params?.nonce && params?.hashedPassword) {
-    return initWithCredentials({
+    result = await initWithCredentials({
       ciphertext: params.ciphertext,
       nonce: params.nonce,
       hashedPassword: params.hashedPassword
     })
-  }
-
-  if (params?.password) {
-    return initWithPassword({
+  } else if (params?.password) {
+    result = await initWithPassword({
       password: params.password
     })
+  } else {
+    throw new Error('Either password or credentials are required')
   }
 
-  throw new Error('Either password or credentials are required')
+  await pearpassVaultClient.resetFailedAttempts()
+  return result
 }
