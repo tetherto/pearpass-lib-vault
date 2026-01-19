@@ -20,7 +20,7 @@ export const createVault = createAsyncThunk(
   'vault/createVault',
   async ({ name, password }) => {
     const vault = {
-      id: generateUniqueId(),
+      id: generateUniqueId({ skipUUID: true }),
       name: name,
       version: VERSION.v1,
       records: [],
