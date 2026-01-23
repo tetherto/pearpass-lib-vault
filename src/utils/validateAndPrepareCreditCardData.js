@@ -5,6 +5,7 @@ import {
   validateAndPrepareCustomFields
 } from './validateAndPrepareCustomFields'
 import { fileSchema } from '../schemas/fileSchema'
+import { migrateNoteToComment } from './migrateNoteToComment'
 
 export const creditCardSchema = Validator.object({
   title: Validator.string().required(),
@@ -13,7 +14,7 @@ export const creditCardSchema = Validator.object({
   expireDate: Validator.string(),
   securityCode: Validator.string(),
   pinCode: Validator.string(),
-  note: Validator.string(),
+  comment: Validator.string(),
   customFields: Validator.array().items(customFieldSchema),
   attachments: Validator.array().items(fileSchema)
 })
@@ -26,7 +27,7 @@ export const validateAndPrepareCreditCardData = (creditCard) => {
     expireDate: creditCard.expireDate,
     securityCode: creditCard.securityCode,
     pinCode: creditCard.pinCode,
-    note: creditCard.note,
+    comment: migrateNoteToComment(creditCard),
     customFields: validateAndPrepareCustomFields(creditCard.customFields),
     attachments: creditCard.attachments
   }
