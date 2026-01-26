@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { MS_PER_SECOND } from 'pearpass-lib-constants'
 import { useDispatch } from 'react-redux'
 
 import { getVaultById } from '../actions/getVaultById'
@@ -24,7 +25,10 @@ export const usePair = () => {
 
     try {
       const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Request timed out')), 10000)
+        setTimeout(
+          () => reject(new Error('Request timed out')),
+          MS_PER_SECOND * 30
+        )
       )
 
       const vaultId = await Promise.race([
