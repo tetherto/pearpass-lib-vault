@@ -1,4 +1,4 @@
-import { constantTimeHashCompare } from 'pearpass-lib-vault-core'
+import { constantTimeHashCompare } from 'pearpass-utils-password-check'
 
 import { pearpassVaultClient } from '../instances'
 import { getCurrentProtectedVaultEncryption } from './getCurrentProtectedVaultEncryption'

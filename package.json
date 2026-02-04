@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "2.5.0",
-    "react-redux": "9.2.0",
-    "sodium-native": "^5.0.10"
+    "pearpass-utils-password-check": "0.0.x",
+    "react-redux": "9.2.0"
   }
 }
