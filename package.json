@@ -16,8 +16,8 @@
     "pear-apps-utils-pattern-search": "0.0.x",
     "pear-apps-utils-validator": "0.0.x",
     "pearpass-lib-constants": "0.0.x",
-    "react": ">=18.3.1",
-    "react-dom": ">=18.3.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "tether-dev-docs": "0.0.x"
   },
   "devDependencies": {
@@ -30,8 +30,8 @@
     "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
-    "react": ">=19.1.0",
-    "react-dom": ">=19.1.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0",
     "standard": "17.1.2"
   },
   "dependencies": {
