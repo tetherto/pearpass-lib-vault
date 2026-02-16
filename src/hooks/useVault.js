@@ -1,3 +1,5 @@
+import { useCallback } from 'react'
+
 import { useDispatch, useSelector } from 'react-redux'
 
 import { addDevice as addDeviceAction } from '../actions/addDevice.js'
@@ -138,7 +140,7 @@ export const useVault = ({ variables } = {}) => {
     }
   }
 
-  const syncVault = async () => {
+  const syncVault = useCallback(async () => {
     const backendVault = await getCurrentVault()
 
     if (backendVault?.id && backendVault.id !== data?.id) {
@@ -149,7 +151,7 @@ export const useVault = ({ variables } = {}) => {
     }
 
     return false
-  }
+  }, [data?.id])
 
   const resetState = () => {
     dispatch(resetStateAction())
