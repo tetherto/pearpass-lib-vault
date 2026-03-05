@@ -173,6 +173,17 @@ function RecordManager({ vaultId }) {
 - [react-redux](https://react-redux.js.org/)
 - [redux-toolkit](https://redux-toolkit.js.org/)
 
+## Depended Submodules
+
+The following sibling submodules must be present in the workspace (they are not declared as npm dependencies):
+
+- [`pearpass-utils-password-check`](../pearpass-utils-password-check)
+- [`pear-apps-utils-generate-unique-id`](../pear-apps-utils-generate-unique-id)
+- [`pear-apps-utils-pattern-search`](../pear-apps-utils-pattern-search)
+- [`pear-apps-utils-validator`](../pear-apps-utils-validator)
+- [`pearpass-lib-constants`](../pearpass-lib-constants)
+- [`tether-dev-docs`](../tether-dev-docs)
+
 ## Related Projects
 
 - [pearpass-app-mobile](https://github.com/tetherto/pearpass-app-mobile) - A mobile app for PearPass, a password manager

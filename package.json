@@ -12,13 +12,8 @@
     "prepare": "husky || true"
   },
   "peerDependencies": {
-    "pear-apps-utils-generate-unique-id": "0.0.x",
-    "pear-apps-utils-pattern-search": "0.0.x",
-    "pear-apps-utils-validator": "0.0.x",
-    "pearpass-lib-constants": "0.0.x",
     "react": ">=18.3.1",
-    "react-dom": ">=18.3.1",
-    "tether-dev-docs": "0.0.x"
+    "react-dom": ">=18.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
@@ -36,7 +31,6 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "2.5.0",
-    "pearpass-utils-password-check": "0.0.x",
     "react-redux": "9.1.2"
   }
 }
