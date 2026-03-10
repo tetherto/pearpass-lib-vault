@@ -1,3 +1,5 @@
+import { useCallback } from 'react'
+
 import { useDispatch, useSelector } from 'react-redux'
 
 import { addDevice as addDeviceAction } from '../actions/addDevice.js'
@@ -49,7 +51,10 @@ export const useVault = ({ variables } = {}) => {
 
   const isLoading = isVaultsLoading || isVaultLoading
 
-  const isVaultProtected = async (vaultId) => checkVaultIsProtected(vaultId)
+  const isVaultProtected = useCallback(
+    async (vaultId) => checkVaultIsProtected(vaultId),
+    []
+  )
 
   const fetchVault = async (vaultId, params) => {
     const { payload: vault, error } = await dispatch(
