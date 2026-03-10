@@ -39,7 +39,7 @@ describe('parseOtpInput', () => {
       digits: 8,
       period: 60,
       issuer: 'GitHub',
-      label: 'GitHub:user@example.com'
+      label: 'user@example.com'
     })
   })
 
@@ -52,7 +52,7 @@ describe('parseOtpInput', () => {
     expect(result.algorithm).toBe('SHA1')
     expect(result.digits).toBe(6)
     expect(result.counter).toBe(5)
-    expect(result.label).toBe('Service:user')
+    expect(result.label).toBe('user')
   })
 
   test('defaults TOTP URI missing optional params', () => {
@@ -72,6 +72,21 @@ describe('parseOtpInput', () => {
   test('returns null for otpauth:// URI without secret', () => {
     const uri = 'otpauth://totp/Test'
     expect(parseOtpInput(uri)).toBeNull()
+  })
+
+  test('strips issuer prefix from label', () => {
+    const uri =
+      'otpauth://totp/GitHub:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=GitHub'
+    const result = parseOtpInput(uri)
+
+    expect(result.label).toBe('user@example.com')
+  })
+
+  test('keeps label as-is when no issuer prefix', () => {
+    const uri = 'otpauth://totp/user@example.com?secret=JBSWY3DPEHPK3PXP'
+    const result = parseOtpInput(uri)
+
+    expect(result.label).toBe('user@example.com')
   })
 
   test('trims whitespace from input', () => {
