@@ -1,3 +1,5 @@
+import { OTP_TYPE } from '../constants/otpType'
+
 /**
  * Parses an otpauth:// URI into a structured OTP config object.
  * @param {string} uri
@@ -7,7 +9,7 @@ const parseOtpauthUri = (uri) => {
   try {
     const url = new URL(uri)
     const type = url.host.toUpperCase()
-    if (type !== 'TOTP' && type !== 'HOTP') return null
+    if (type !== OTP_TYPE.TOTP && type !== OTP_TYPE.HOTP) return null
 
     const secret = url.searchParams.get('secret')
     if (!secret) return null
@@ -19,7 +21,7 @@ const parseOtpauthUri = (uri) => {
       digits: parseInt(url.searchParams.get('digits') || '6', 10)
     }
 
-    if (type === 'TOTP') {
+    if (type === OTP_TYPE.TOTP) {
       config.period = parseInt(url.searchParams.get('period') || '30', 10)
     } else {
       config.counter = parseInt(url.searchParams.get('counter') || '0', 10)
@@ -61,7 +63,7 @@ export const parseOtpInput = (input) => {
 
   return {
     secret: trimmed.toUpperCase(),
-    type: 'TOTP',
+    type: OTP_TYPE.TOTP,
     algorithm: 'SHA1',
     digits: 6,
     period: 30
