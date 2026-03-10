@@ -1,5 +1,6 @@
 import {
   createContext,
+  createElement,
   useCallback,
   useContext,
   useEffect,
@@ -13,21 +14,31 @@ import { createAlignedInterval } from '../utils/createAlignedInterval'
 const OtpRefreshContext = createContext(null)
 
 /**
- * Provider that exposes a refresh trigger for OTP codes.
- * Wrap around any subtree that contains both useOtpCodes and useOtp consumers.
+ * Provider that holds a shared ref for OTP refresh callbacks.
+ * Meant to be placed above both the list view (useOtpCodes) and detail view (useOtp).
  */
-export const OtpRefreshProvider = OtpRefreshContext.Provider
+export const OtpRefreshProvider = ({ children }) => {
+  const refreshRef = useRef(null)
+  return createElement(
+    OtpRefreshContext.Provider,
+    { value: refreshRef },
+    children
+  )
+}
 
 /**
  * Returns a function that triggers an immediate OTP codes refresh.
  * Call this after HOTP counter increments.
  * @returns {(() => void) | null}
  */
-export const useOtpRefresh = () => useContext(OtpRefreshContext)
+export const useOtpRefresh = () => {
+  const ref = useContext(OtpRefreshContext)
+  return ref ? () => ref.current?.() : null
+}
 
 /**
  * Polls OTP codes for records that have otpPublic data.
- * Synced to wall-clock seconds. Exposes a refresh trigger via OtpRefreshProvider.
+ * Synced to wall-clock seconds. Auto-registers refresh via OtpRefreshContext.
  *
  * @param {Array} records
  * @returns {Object} Map of recordId → { code, timeRemaining, recordId }
@@ -58,6 +69,14 @@ export const useOtpCodes = (records) => {
     }
   }, [])
 
+  const refreshRef = useContext(OtpRefreshContext)
+  useEffect(() => {
+    if (refreshRef) refreshRef.current = refresh
+    return () => {
+      if (refreshRef) refreshRef.current = null
+    }
+  }, [refreshRef, refresh])
+
   useEffect(() => {
     if (!otpRecordCount) return
 
@@ -67,5 +86,5 @@ export const useOtpCodes = (records) => {
     return cleanup
   }, [otpRecordCount, refresh])
 
-  return { otpCodes, refresh }
+  return { otpCodes }
 }
