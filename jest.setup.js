@@ -33,7 +33,9 @@ const mockClient = {
   pairActiveVault: jest.fn(),
   cancelPairActiveVault: jest.fn(),
   setStoragePath: jest.fn(),
-  encryptionAdd: jest.fn()
+  encryptionAdd: jest.fn(),
+  generateHotpNext: jest.fn(),
+  generateOtpCodesByIds: jest.fn()
 }
 
 setPearpassVaultClient(mockClient)

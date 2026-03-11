@@ -328,6 +328,69 @@ describe('selectRecords', () => {
     expect(result.data[1].createdAt).toBeGreaterThan(result.data[2].createdAt)
   })
 
+  test('should filter by hasOtp — only records with otpPublic', () => {
+    const stateWithOtp = {
+      vault: {
+        isLoading: false,
+        data: {
+          records: [
+            {
+              id: '1',
+              data: { title: 'With OTP' },
+              type: 'login',
+              otpPublic: { type: 'TOTP', currentCode: '123456' }
+            },
+            {
+              id: '2',
+              data: { title: 'Without OTP' },
+              type: 'login'
+            },
+            {
+              id: '3',
+              data: { title: 'Also with OTP' },
+              type: 'login',
+              otpPublic: { type: 'HOTP', currentCode: '654321' }
+            }
+          ]
+        }
+      }
+    }
+
+    const selector = selectRecords({ filters: { hasOtp: true } })
+    const result = selector(stateWithOtp)
+
+    expect(result.data).toHaveLength(2)
+    expect(result.data.map((r) => r.id)).toEqual(['1', '3'])
+  })
+
+  test('should return all records when hasOtp is false or not set', () => {
+    const stateWithOtp = {
+      vault: {
+        isLoading: false,
+        data: {
+          records: [
+            {
+              id: '1',
+              data: { title: 'With OTP' },
+              type: 'login',
+              otpPublic: { type: 'TOTP', currentCode: '123456' }
+            },
+            {
+              id: '2',
+              data: { title: 'Without OTP' },
+              type: 'login'
+            }
+          ]
+        }
+      }
+    }
+
+    const selector = selectRecords({ filters: { hasOtp: false } })
+    const result = selector(stateWithOtp)
+
+    expect(result.data).toHaveLength(2)
+  })
+
   test('should handle empty state gracefully', () => {
     const emptyState = { vault: {} }
     const selector = selectRecords()

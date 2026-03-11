@@ -1,4 +1,5 @@
 export { RECORD_TYPES } from './constants/recordTypes'
+export { OTP_TYPE } from './constants/otpType'
 
 export { useCreateFolder } from './hooks/useCreateFolder'
 export { useCreateRecord } from './hooks/useCreateRecord'
@@ -28,3 +29,17 @@ export { getMasterEncryption } from './api/getMasterEncryption.js'
 export { getDefaultFavicon } from './api/getDefaultFavicon.js'
 export { encryptExportData } from './api/encryptExportData.js'
 export { decryptExportData } from './api/decryptExportData.js'
+export { generateOtpCodesByIds } from './api/generateOtpCodesByIds.js'
+export { generateHotpNext } from './api/generateHotpNext.js'
+
+export { useOtp } from './hooks/useOtp'
+export {
+  useOtpCodes,
+  OtpRefreshProvider,
+  useOtpRefresh
+} from './hooks/useOtpCodes'
+export { useTimerAnimation } from './hooks/useTimerAnimation'
+
+export { formatOtpCode } from './utils/formatOtpCode'
+export { createAlignedInterval } from './utils/createAlignedInterval'
+export { isExpiring, EXPIRY_THRESHOLD_SECONDS } from './utils/otpExpiry'

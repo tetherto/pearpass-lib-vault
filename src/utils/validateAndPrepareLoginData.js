@@ -1,10 +1,22 @@
 import { Validator } from 'pear-apps-utils-validator'
 
+import { parseOtpInput } from './parseOtpInput'
 import {
   customFieldSchema,
   validateAndPrepareCustomFields
 } from './validateAndPrepareCustomFields'
 import { fileSchema } from '../schemas/fileSchema'
+
+export const otpSchema = Validator.object({
+  secret: Validator.string().required(),
+  type: Validator.string().required(),
+  algorithm: Validator.string().required(),
+  digits: Validator.number().required(),
+  period: Validator.number(),
+  counter: Validator.number(),
+  issuer: Validator.string(),
+  label: Validator.string()
+})
 
 export const credentialSchema = Validator.object({
   authenticatorAttachment: Validator.string().required(),
@@ -38,10 +50,14 @@ export const loginSchema = Validator.object({
   note: Validator.string(),
   websites: Validator.array().items(Validator.string().required()),
   customFields: Validator.array().items(customFieldSchema),
-  attachments: Validator.array().items(fileSchema)
+  attachments: Validator.array().items(fileSchema),
+  otp: otpSchema,
+  otpInput: Validator.string()
 })
 
 export const validateAndPrepareLoginData = (login) => {
+  const otp = login.otpInput ? parseOtpInput(login.otpInput) : login.otp
+
   const loginData = {
     title: login.title,
     username: login.username,
@@ -52,7 +68,9 @@ export const validateAndPrepareLoginData = (login) => {
     note: login.note,
     websites: login.websites,
     customFields: validateAndPrepareCustomFields(login.customFields),
-    attachments: login.attachments
+    attachments: login.attachments,
+    otp,
+    otpInput: login.otpInput
   }
 
   const errors = loginSchema.validate(loginData)

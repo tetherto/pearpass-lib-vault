@@ -28,6 +28,10 @@ export const selectRecords = ({ filters, sort } = {}) =>
             return false
           }
 
+          if (filters?.hasOtp && !record.otpPublic) {
+            return false
+          }
+
           if (!matchRecordToSearchPattern(filters?.searchPattern, record)) {
             return false
           }
