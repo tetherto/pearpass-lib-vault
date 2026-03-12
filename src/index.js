@@ -33,11 +33,7 @@ export { generateOtpCodesByIds } from './api/generateOtpCodesByIds.js'
 export { generateHotpNext } from './api/generateHotpNext.js'
 
 export { useOtp } from './hooks/useOtp'
-export {
-  useOtpCodes,
-  OtpRefreshProvider,
-  useOtpRefresh
-} from './hooks/useOtpCodes'
+export { OtpRefreshProvider, useOtpRefresh } from './hooks/useOtpCodes'
 export { useTimerAnimation } from './hooks/useTimerAnimation'
 
 export { formatOtpCode } from './utils/formatOtpCode'

@@ -4,7 +4,8 @@ import { matchPatternToValue } from 'pear-apps-utils-pattern-search'
 export const selectRecords = ({ filters, sort } = {}) =>
   createSelector(
     (state) => state.vault,
-    (vault) => {
+    (state) => state.otp.codes,
+    (vault, otpCodes) => {
       const records =
         vault.data?.records?.filter((record) => {
           if (!record) {
@@ -58,7 +59,7 @@ export const selectRecords = ({ filters, sort } = {}) =>
 
       return {
         isLoading: vault.isLoading,
-        data: sortedRecords
+        data: mergeOtpCodes(sortedRecords, otpCodes)
       }
     }
   )
@@ -97,4 +98,22 @@ const matchRecordToSearchPattern = (searchPattern, record) => {
   return valuesToSearch.some((value) =>
     matchPatternToValue(searchPattern, value)
   )
+}
+
+const mergeOtpCodes = (records, otpCodes) => {
+  if (!otpCodes || !Object.keys(otpCodes).length) return records
+
+  return records.map((record) => {
+    const otpData = otpCodes[record.id]
+    if (!record.otpPublic || !otpData) return record
+
+    return {
+      ...record,
+      otpPublic: {
+        ...record.otpPublic,
+        currentCode: otpData.code,
+        timeRemaining: otpData.timeRemaining
+      }
+    }
+  })
 }

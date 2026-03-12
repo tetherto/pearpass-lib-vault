@@ -4,24 +4,75 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useRef,
-  useState
+  useRef
 } from 'react'
 
+import { useDispatch, useSelector } from 'react-redux'
+import { shallowEqual } from 'react-redux'
+
 import { generateOtpCodesByIds } from '../api/generateOtpCodesByIds'
+import { updateOtpCodes } from '../slices/otpSlice'
 import { createAlignedInterval } from '../utils/createAlignedInterval'
 
 const OtpRefreshContext = createContext(null)
 
 /**
- * Provider that holds a shared ref for OTP refresh callbacks.
- * Meant to be placed above both the list view (useOtpCodes) and detail view (useOtp).
+ * Centralized OTP poller component.
+ * Reads OTP record IDs from Redux, polls codes every second,
+ * and dispatches results to the otp slice.
+ */
+const OtpPoller = ({ refreshRef }) => {
+  const dispatch = useDispatch()
+
+  const otpRecordIds = useSelector(
+    (state) =>
+      state.vault.data?.records?.filter((r) => r.otpPublic).map((r) => r.id) ??
+      [],
+    shallowEqual
+  )
+
+  const otpRecordIdsRef = useRef(otpRecordIds)
+  otpRecordIdsRef.current = otpRecordIds
+
+  const refresh = useCallback(async () => {
+    const ids = otpRecordIdsRef.current
+    if (!ids.length) return
+
+    try {
+      const results = await generateOtpCodesByIds(ids)
+      dispatch(updateOtpCodes(results))
+    } catch {
+      // Will retry on next tick
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    if (refreshRef) refreshRef.current = refresh
+    return () => {
+      if (refreshRef) refreshRef.current = null
+    }
+  }, [refreshRef, refresh])
+
+  useEffect(() => {
+    if (!otpRecordIds.length) return
+
+    refresh()
+    return createAlignedInterval(refresh)
+  }, [otpRecordIds.length, refresh])
+
+  return null
+}
+
+/**
+ * Provider that manages centralized OTP polling.
+ * Place above all components that consume OTP data via useRecords/useRecordById.
  */
 export const OtpRefreshProvider = ({ children }) => {
   const refreshRef = useRef(null)
   return createElement(
     OtpRefreshContext.Provider,
     { value: refreshRef },
+    createElement(OtpPoller, { refreshRef }),
     children
   )
 }
@@ -34,57 +85,4 @@ export const OtpRefreshProvider = ({ children }) => {
 export const useOtpRefresh = () => {
   const ref = useContext(OtpRefreshContext)
   return ref ? () => ref.current?.() : null
-}
-
-/**
- * Polls OTP codes for records that have otpPublic data.
- * Synced to wall-clock seconds. Auto-registers refresh via OtpRefreshContext.
- *
- * @param {Array} records
- * @returns {Object} Map of recordId → { code, timeRemaining, recordId }
- */
-export const useOtpCodes = (records) => {
-  const [otpCodes, setOtpCodes] = useState({})
-  const recordsRef = useRef(records)
-  recordsRef.current = records
-
-  const otpRecordCount = records?.filter((r) => r.otpPublic).length ?? 0
-
-  const refresh = useCallback(async () => {
-    const current = recordsRef.current
-    if (!current?.length) return
-
-    const ids = current.filter((r) => r.otpPublic).map((r) => r.id)
-    if (!ids.length) return
-
-    try {
-      const results = await generateOtpCodesByIds(ids)
-      const codesMap = {}
-      for (const result of results) {
-        codesMap[result.recordId] = result
-      }
-      setOtpCodes(codesMap)
-    } catch {
-      // Will retry on next tick
-    }
-  }, [])
-
-  const refreshRef = useContext(OtpRefreshContext)
-  useEffect(() => {
-    if (refreshRef) refreshRef.current = refresh
-    return () => {
-      if (refreshRef) refreshRef.current = null
-    }
-  }, [refreshRef, refresh])
-
-  useEffect(() => {
-    if (!otpRecordCount) return
-
-    refresh()
-    const cleanup = createAlignedInterval(refresh)
-
-    return cleanup
-  }, [otpRecordCount, refresh])
-
-  return { otpCodes }
 }
