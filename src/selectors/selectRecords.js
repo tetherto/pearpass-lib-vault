@@ -41,20 +41,29 @@ export const selectRecords = ({ filters, sort } = {}) =>
         }) ?? []
 
       const sortedRecords = [...records].sort((a, b) => {
-        if (a.isFavorite === b.isFavorite) {
-          if (sort?.key === 'updatedAt') {
-            return sort?.direction === 'asc'
-              ? a.updatedAt - b.updatedAt
-              : b.updatedAt - a.updatedAt
-          }
-          if (sort?.key === 'createdAt') {
-            return sort?.direction === 'asc'
-              ? a.createdAt - b.createdAt
-              : b.createdAt - a.createdAt
-          }
+        if (a.isFavorite !== b.isFavorite) {
+          return a.isFavorite ? -1 : 1
         }
 
-        return a.isFavorite ? -1 : 1
+        if (sort?.key === 'updatedAt') {
+          return sort?.direction === 'asc'
+            ? a.updatedAt - b.updatedAt
+            : b.updatedAt - a.updatedAt
+        }
+        if (sort?.key === 'createdAt') {
+          return sort?.direction === 'asc'
+            ? a.createdAt - b.createdAt
+            : b.createdAt - a.createdAt
+        }
+        if (sort?.key === 'data.title') {
+          const titleA = a.data?.title ?? ''
+          const titleB = b.data?.title ?? ''
+          return sort?.direction === 'asc'
+            ? titleA.localeCompare(titleB)
+            : titleB.localeCompare(titleA)
+        }
+
+        return 0
       })
 
       return {
