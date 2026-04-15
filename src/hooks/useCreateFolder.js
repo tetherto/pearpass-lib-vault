@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { createFolder as createFolderAction } from '../actions/createFolder'
@@ -19,7 +20,8 @@ export const useCreateFolder = ({ onCompleted, onError } = {}) => {
 
   const { isFolderLoading: isLoading } = useSelector(selectVault)
 
-  const { data: foldersData } = useSelector(selectFolders)
+  const selectFoldersSelector = useMemo(() => selectFolders(), [])
+  const { data: foldersData } = useSelector(selectFoldersSelector)
 
   const createFolder = async (folderName) => {
     if (!folderName) {
