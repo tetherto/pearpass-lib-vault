@@ -27,7 +27,8 @@ import { handleErrorIfExists } from '../utils/handleError'
  *    }
  *    sort: {
  *      field: string
- *       direction: 'asc' | 'desc'
+ *      direction: 'asc' | 'desc'
+ *      key: string
  *    }
  * }
  * }} options

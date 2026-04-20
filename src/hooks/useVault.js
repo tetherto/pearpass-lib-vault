@@ -33,9 +33,23 @@ import { logger } from '../utils/logger'
  *         ciphertext?: string
  *         nonce?: string
  *         hashedPassword?: string
- *        }) => Promise<any>
+ *        }) => Promise<any | undefined>
+ *      addDevice: (device: unknown) => Promise<void>
  *      isVaultProtected: (vaultId: string) => Promise<boolean>
  *      resetState: () => void
+ *      updateUnprotectedVault: (
+ *        vaultId: string,
+ *        vaultUpdate: {
+ *          name: string
+ *          password: string
+ *        }) => Promise<void>
+ *      updateProtectedVault: (
+ *        vaultId: string,
+ *        vaultUpdate: {
+ *          name: string
+ *          password: string
+ *          currentPassword: string
+ *        }) => Promise<void>
  *      syncVault: () => Promise<boolean>
  *  }}
  */
