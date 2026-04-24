@@ -1,3 +1,5 @@
+import { useCallback } from 'react'
+
 import { useDispatch, useSelector } from 'react-redux'
 
 import { createInvite as createInviteAction } from '../actions/createInvite'
@@ -16,12 +18,20 @@ export const useInvite = () => {
   const dispatch = useDispatch()
   const { isLoading, data } = useSelector(selectInvite)
 
-  const handleAction = async (action) => dispatch(action())
+  const createInvite = useCallback(
+    () => dispatch(createInviteAction()),
+    [dispatch]
+  )
+
+  const deleteInvite = useCallback(
+    () => dispatch(deleteInviteAction()),
+    [dispatch]
+  )
 
   return {
     isLoading,
     data,
-    createInvite: () => handleAction(createInviteAction),
-    deleteInvite: () => handleAction(deleteInviteAction)
+    createInvite,
+    deleteInvite
   }
 }
