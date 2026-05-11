@@ -18,7 +18,20 @@ export { useBlindMirrors } from './hooks/useBlindMirrors'
 export { VaultProvider } from './store'
 
 export { closeAllInstances } from './api/closeAllInstances'
-export { setPearpassVaultClient, setStoragePath } from './instances'
+export {
+  setPearpassVaultClient,
+  setCurrentDeviceName,
+  getCurrentDeviceName,
+  setStoragePath
+} from './instances'
+
+export { queueAction } from './api/queueAction'
+export { broadcastAction } from './api/broadcastAction'
+export { processPendingActions } from './api/processPendingActions'
+export { runActionScan } from './api/actionRunner'
+export { getMyDeviceId } from './utils/getMyDeviceId'
+
+export { ACTION_TYPES, ACTIONS } from './actions'
 
 export { authoriseCurrentProtectedVault } from './api/authoriseCurrentProtectedVault'
 export { getVaultById } from './api/getVaultById'

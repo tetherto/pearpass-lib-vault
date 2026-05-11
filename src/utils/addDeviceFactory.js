@@ -3,21 +3,21 @@ import { generateUniqueId } from '@tetherto/pear-apps-utils-generate-unique-id'
 import { validateAndPrepareDevice } from './validateAndPrepareDevice'
 
 /**
- * @param {{
- *  data: object,
- * }} payload
+ * @param {string} payload - device name (e.g. `Platform.OS + ' ' + Platform.Version`)
  * @param {string} vaultId
+ * @param {string} writerKey - the autobase writer key for this device on this vault
  * @returns {Object}
  */
-export const addDeviceFactory = (payload, vaultId) => {
-  if (!payload || !vaultId) {
-    throw new Error('Payload and vaultId are required')
+export const addDeviceFactory = (payload, vaultId, writerKey) => {
+  if (!payload || !vaultId || !writerKey) {
+    throw new Error('Payload, vaultId and writerKey are required')
   }
 
   const device = {
     id: generateUniqueId(),
     vaultId: vaultId,
     name: payload,
+    writerKey,
     createdAt: Date.now()
   }
 

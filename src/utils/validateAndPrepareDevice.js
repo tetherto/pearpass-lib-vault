@@ -6,6 +6,7 @@ export const deviceSchema = Validator.object({
   id: Validator.string().required(),
   vaultId: Validator.string().required(),
   name: Validator.string().required(),
+  writerKey: Validator.string().required(),
   createdAt: Validator.number().required()
 })
 
