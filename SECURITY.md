@@ -1,4 +1,4 @@
-# Report a security issue
+# Report a security issue for Pearpass
 
 To report a security issue, please email [security-oss@tether.io](mailto:security-oss@tether.io).
 
