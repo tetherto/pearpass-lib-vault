@@ -8,7 +8,9 @@ import { logger } from '../utils/logger'
  */
 export const processPendingActions = async () => {
   const myId = await getMyDeviceId()
-  if (!myId) return
+  if (!myId) {
+    throw new Error('processPendingActions: cannot resolve own device id')
+  }
 
   // '/' (0x2F) is exactly one byte before '0' (0x30), so the range captures
   // all keys of the form `actions/queue/<myId>/...` without spilling into

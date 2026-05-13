@@ -1,6 +1,7 @@
 import { listDevices } from './listDevices'
 import { queueAction } from './queueAction'
 import { getMyDeviceId } from '../utils/getMyDeviceId'
+import { ACTION_TYPES } from '../actions'
 
 /**
  * @param {{
@@ -17,6 +18,10 @@ import { getMyDeviceId } from '../utils/getMyDeviceId'
 export const broadcastAction = async ({ type, payload } = {}) => {
   if (!type) {
     throw new Error('broadcastAction: type is required')
+  }
+
+  if (!Object.values(ACTION_TYPES).includes(type)) {
+    throw new Error('broadcastAction: unknown action type: ' + type)
   }
 
   const myDeviceId = await getMyDeviceId()

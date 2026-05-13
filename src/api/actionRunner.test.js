@@ -1,4 +1,5 @@
 import { runActionScan } from './actionRunner'
+import { logger } from '../utils/logger'
 
 const mockProcessPendingActions = jest.fn()
 
@@ -6,9 +7,12 @@ jest.mock('./processPendingActions', () => ({
   processPendingActions: (...args) => mockProcessPendingActions(...args)
 }))
 
+jest.spyOn(logger, 'error').mockImplementation(() => {})
+
 describe('actionRunner', () => {
   beforeEach(() => {
     mockProcessPendingActions.mockReset()
+    logger.error.mockClear()
   })
 
   it('calls processPendingActions', async () => {
@@ -37,13 +41,17 @@ describe('actionRunner', () => {
     expect(mockProcessPendingActions).toHaveBeenCalledTimes(2)
   })
 
-  it('propagates processPendingActions errors but resets state for the next scan', async () => {
+  it('swallows processPendingActions errors, logs them, and resets state for the next scan', async () => {
     mockProcessPendingActions
       .mockRejectedValueOnce(new Error('boom'))
       .mockResolvedValue(undefined)
 
-    await expect(runActionScan()).rejects.toThrow('boom')
+    await expect(runActionScan()).resolves.toBeUndefined()
     expect(mockProcessPendingActions).toHaveBeenCalledTimes(1)
+    expect(logger.error).toHaveBeenCalledWith(
+      'runActionScan: processPendingActions failed',
+      expect.any(Error)
+    )
 
     await runActionScan()
     expect(mockProcessPendingActions).toHaveBeenCalledTimes(2)

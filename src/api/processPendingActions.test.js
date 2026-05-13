@@ -25,9 +25,9 @@ describe('processPendingActions', () => {
     ])
   })
 
-  it('skips the find when deviceId cannot be resolved', async () => {
+  it('throws when own deviceId cannot be resolved', async () => {
     pearpassVaultClient.activeVaultList.mockResolvedValue([])
-    await processPendingActions()
+    await expect(processPendingActions()).rejects.toThrow('cannot resolve own device id')
     expect(pearpassVaultClient.activeVaultFind).not.toHaveBeenCalled()
     expect(pearpassVaultClient.activeVaultRemove).not.toHaveBeenCalled()
   })
