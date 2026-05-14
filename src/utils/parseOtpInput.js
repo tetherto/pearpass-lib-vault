@@ -32,8 +32,6 @@ const parseOtpauthUri = (uri) => {
 
     const rawLabel = decodeURIComponent(url.pathname.slice(1))
     if (rawLabel) {
-      // Strip issuer prefix (e.g. 'GitHub:user@example.com' -> 'user@example.com')
-      // to match otpauth library behavior used in vault-core
       const colonIndex = rawLabel.indexOf(':')
       config.label =
         colonIndex !== -1 ? rawLabel.slice(colonIndex + 1) : rawLabel
