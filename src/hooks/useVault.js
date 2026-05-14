@@ -9,6 +9,7 @@ import { getVaults } from '../actions/getVaults'
 import { resetState as resetStateAction } from '../actions/resetState'
 import { updateProtectedVault as updateProtectedVaultAction } from '../actions/updateProtectedVault'
 import { updateUnprotectedVault as updateUnprotectedVaultAction } from '../actions/updateUnprotectedVault'
+import { runActionScan } from '../api/actionRunner'
 import { checkVaultIsProtected } from '../api/checkVaultIsProtected'
 import { getCurrentVault } from '../api/getCurrentVault'
 import { initListener } from '../api/initListener'
@@ -35,7 +36,7 @@ import { logger } from '../utils/logger'
  *         nonce?: string
  *         hashedPassword?: string
  *        }) => Promise<any | undefined>
- *      addDevice: (device: unknown) => Promise<void>
+ *      addDevice: () => Promise<void>
  *      isVaultProtected: (vaultId: string) => Promise<boolean>
  *      resetState: () => void
  *      updateUnprotectedVault: (
@@ -89,8 +90,11 @@ export const useVault = ({ variables } = {}) => {
         if (current) {
           dispatch(getVaultById({ vaultId: current.id }))
         }
+        runActionScan().catch((err) => logger.error('runActionScan failed', { err }))
       }
     })
+
+    runActionScan().catch((err) => logger.error('runActionScan failed', { err }))
 
     return vault
   }
@@ -110,8 +114,8 @@ export const useVault = ({ variables } = {}) => {
     return vault
   }
 
-  const addDevice = async (device) => {
-    const { error: createError } = await dispatch(addDeviceAction(device))
+  const addDevice = async () => {
+    const { error: createError } = await dispatch(addDeviceAction())
 
     await refetch()
 

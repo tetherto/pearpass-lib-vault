@@ -1,18 +1,28 @@
 import {
   setPearpassVaultClient,
   pearpassVaultClient,
+  getCurrentDeviceName,
   setStoragePath
 } from './index'
 
 describe('instance management functions', () => {
-  test('setPearpassVaultClient sets the global instance', () => {
+  test('setPearpassVaultClient sets the client and device name', () => {
     const mockInstance = {
       setStoragePath: jest.fn()
     }
 
-    setPearpassVaultClient(mockInstance)
+    setPearpassVaultClient(mockInstance, { currentDeviceName: 'ios 18.0' })
 
     expect(pearpassVaultClient).toBe(mockInstance)
+    expect(getCurrentDeviceName()).toBe('ios 18.0')
+  })
+
+  test('setPearpassVaultClient defaults currentDeviceName to null when not provided', () => {
+    const mockInstance = { setStoragePath: jest.fn() }
+
+    setPearpassVaultClient(mockInstance)
+
+    expect(getCurrentDeviceName()).toBeNull()
   })
 
   test('setStoragePath calls setStoragePath on the client instance', async () => {

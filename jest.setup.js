@@ -36,10 +36,12 @@ const mockClient = {
   setStoragePath: jest.fn(),
   encryptionAdd: jest.fn(),
   generateHotpNext: jest.fn(),
-  generateOtpCodesByIds: jest.fn()
+  generateOtpCodesByIds: jest.fn(),
+  activeVaultFind: jest.fn(),
+  activeVaultGetWriterKey: jest.fn().mockResolvedValue('writer-key-hex')
 }
 
-setPearpassVaultClient(mockClient)
+setPearpassVaultClient(mockClient, { currentDeviceName: null })
 
 global.pearpassVaultClient = mockClient
 

@@ -1,6 +1,6 @@
 {
   "name": "pearpass-lib-vault",
-  "version": "0.0.85",
+  "version": "0.0.86",
   "type": "module",
   "description": "A library for vault management",
   "main": "src/index.js",
