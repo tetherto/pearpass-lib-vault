@@ -48,6 +48,26 @@ describe('matchLoginRecords', () => {
     expect(result[0].reasons).toEqual(['issuer-domain'])
   })
 
+  it('matches issuer to a ccTLD-suffixed website (amazon.co.uk)', () => {
+    const recs = [
+      record('a', { title: 'Amazon UK', websites: ['https://amazon.co.uk'] }),
+      record('b', { title: 'Bank', websites: ['https://mybank.com'] })
+    ]
+    const result = matchLoginRecords({ issuer: 'Amazon' }, recs)
+    expect(result.map((m) => m.record.id)).toEqual(['a'])
+    expect(result[0].reasons).toEqual(['issuer-domain'])
+  })
+
+  it('does not match issuer against a path segment of an unrelated website', () => {
+    const recs = [
+      record('a', {
+        title: 'Example',
+        websites: ['https://example.com/github/auth']
+      })
+    ]
+    expect(matchLoginRecords({ issuer: 'GitHub' }, recs)).toEqual([])
+  })
+
   it('does not match issuer against title when website is missing', () => {
     const recs = [
       record('a', { title: 'GitHub - Personal' }),

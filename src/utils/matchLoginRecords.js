@@ -39,11 +39,21 @@ const splitLabel = (label) => {
   }
 }
 
+const hostnameOf = (url) => {
+  if (typeof url !== 'string') return ''
+  return url
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .split(/[/?#]/)[0]
+    .split(':')[0]
+}
+
 const issuerMatchesAnyWebsite = (issuerToken, websites) => {
   if (!issuerToken) return false
   for (const website of websites) {
-    const websiteToken = extractDomainName(website)
-    if (websiteToken && websiteToken === issuerToken) return true
+    const host = hostnameOf(website)
+    if (host && host.includes(issuerToken)) return true
   }
   return false
 }
