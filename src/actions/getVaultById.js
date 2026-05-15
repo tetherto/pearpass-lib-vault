@@ -5,7 +5,7 @@ import { getVaultById as getVaultByIdApi } from '../api/getVaultById'
 import { registerPeer } from '../api/inbox'
 import { listDevices } from '../api/listDevices'
 import { listRecords } from '../api/listRecords'
-import { getCurrentDeviceName, pearpassVaultClient } from '../instances'
+import { pearpassVaultClient } from '../instances'
 import { logger } from '../utils/logger'
 
 export const getVaultById = createAsyncThunk(
@@ -37,23 +37,19 @@ export const getVaultById = createAsyncThunk(
 
 const healLocalDeviceEntry = async (devices) => {
   try {
-    const deviceName = getCurrentDeviceName()
-    if (!deviceName) return devices
-    const existing = devices.find((d) => d?.name === deviceName)
-    if (!existing) return devices
     const writerKey =
       (await pearpassVaultClient?.activeVaultGetWriterKey?.()) ?? null
+    if (!writerKey) return devices
+    const existing = devices.find((d) => d?.writerKey === writerKey)
+    if (!existing) return devices
     const masterTopic =
       typeof pearpassVaultClient?.personalSwarmGetTopic === 'function'
         ? (await pearpassVaultClient.personalSwarmGetTopic()) || null
         : null
-    if (
-      existing.writerKey === writerKey &&
-      (existing.masterTopic ?? null) === masterTopic
-    ) {
+    if ((existing.masterTopic ?? null) === masterTopic) {
       return devices
     }
-    const healed = { ...existing, writerKey, createdAt: Date.now() }
+    const healed = { ...existing, createdAt: Date.now() }
     if (masterTopic) healed.masterTopic = masterTopic
     else delete healed.masterTopic
     await addDeviceApi(healed)

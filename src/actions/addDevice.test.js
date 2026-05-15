@@ -96,11 +96,12 @@ describe('addDevice', () => {
     expect(generateUniqueId).toHaveBeenCalled()
   })
 
-  it('should return existing device when one with the same name is already present', async () => {
+  it('should return existing device when one with the same writerKey is already present', async () => {
     const existing = {
       id: 'existing-id',
       vaultId: mockVaultId,
       name: mockDeviceName,
+      writerKey: mockWriterKey,
       createdAt: 0
     }
     getState.mockReturnValueOnce({
@@ -114,5 +115,27 @@ describe('addDevice', () => {
 
     expect(result.payload).toEqual(existing)
     expect(addDeviceApi).not.toHaveBeenCalled()
+  })
+
+  it('creates a new entry when no device with our writerKey exists, even if a name collides', async () => {
+    const sameNameDifferentDevice = {
+      id: 'other-device',
+      vaultId: mockVaultId,
+      name: mockDeviceName,
+      writerKey: 'wk-other',
+      createdAt: 1
+    }
+    getState.mockReturnValueOnce({
+      vault: {
+        data: { id: mockVaultId, devices: [sameNameDifferentDevice] }
+      }
+    })
+
+    const thunk = addDevice()
+    const result = await thunk(dispatch, getState)
+
+    expect(result.payload.id).toBe(mockDeviceId)
+    expect(result.payload.writerKey).toBe(mockWriterKey)
+    expect(addDeviceApi).toHaveBeenCalledTimes(1)
   })
 })

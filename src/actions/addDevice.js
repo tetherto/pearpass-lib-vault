@@ -18,20 +18,16 @@ export const addDevice = createAsyncThunk(
     const masterTopic = await safeGetPersonalSwarmTopic()
 
     const existingDevice = existingDevices.find(
-      (device) => device.name === deviceName
+      (device) => device.writerKey === writerKey
     )
 
-    if (
-      existingDevice &&
-      existingDevice.writerKey === writerKey &&
-      existingDevice.masterTopic === masterTopic
-    ) {
+    if (existingDevice && existingDevice.masterTopic === masterTopic) {
       logger.log('Device already added to vault')
       return existingDevice
     }
 
     const base = existingDevice
-      ? { ...existingDevice, writerKey, createdAt: Date.now() }
+      ? { ...existingDevice, createdAt: Date.now() }
       : addDeviceFactory(deviceName, vaultId, writerKey, masterTopic)
 
     const device = { ...base }
