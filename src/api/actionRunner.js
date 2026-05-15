@@ -1,6 +1,5 @@
 import { processInbox } from './inbox'
 import { processOutbox } from './outbox'
-import { processPendingActions } from './processPendingActions'
 import { logger } from '../utils/logger'
 
 let isProcessing = false
@@ -28,17 +27,6 @@ export const runActionScan = async () => {
         await processOutbox()
       } catch (err) {
         logger.error('runActionScan: processOutbox failed', err)
-      }
-
-      try {
-        await processPendingActions()
-      } catch (err) {
-        // Legacy queue path requires an active vault; ok to skip silently
-        // when we're called outside that context.
-        logger.log(
-          'runActionScan: processPendingActions skipped',
-          err?.message ?? err
-        )
       }
     } while (pendingRescan)
   } finally {
