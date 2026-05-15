@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+import { OTP_TYPE } from '../constants/otpType'
 import { addDevice } from '../actions/addDevice'
 import { createFolder } from '../actions/createFolder'
 import { createRecord } from '../actions/createRecord'
@@ -65,7 +66,26 @@ export const vaultSlice = createSlice({
       })
       .addCase(createRecord.fulfilled, (state, action) => {
         state.isRecordLoading = false
-        state.data.records.push(action.payload)
+        const newRecord = action.payload
+        if (newRecord?.data?.otp) {
+          const otp = newRecord.data.otp
+          const otpPublic = {
+            type: otp.type,
+            digits: otp.digits,
+            issuer: otp.issuer,
+            label: otp.label
+          }
+          if (otp.type === OTP_TYPE.TOTP) {
+            otpPublic.period = otp.period
+          }
+          const enriched = { ...newRecord, data: { ...newRecord.data } }
+          delete enriched.data.otp
+          delete enriched.data.otpInput
+          enriched.otpPublic = otpPublic
+          state.data.records.push(enriched)
+        } else {
+          state.data.records.push(newRecord)
+        }
       })
       .addCase(createRecord.rejected, (state, action) => {
         logger.error(`Action createRecord error:`, JSON.stringify(action.error))
