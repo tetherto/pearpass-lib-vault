@@ -55,3 +55,6 @@ export { groupOtpRecords } from './utils/groupOtpRecords'
 export { matchLoginRecords } from './utils/matchLoginRecords'
 export { validateOtpInput } from './utils/validateOtpInput'
 export { parseOtpInput } from './utils/parseOtpInput'
+
+export { findOtpDuplicates } from './api/findOtpDuplicates'
+export { useFindOtpDuplicates } from './hooks/useFindOtpDuplicates'
