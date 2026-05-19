@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -13,6 +13,7 @@ import { runActionScan } from '../api/actionRunner'
 import { checkVaultIsProtected } from '../api/checkVaultIsProtected'
 import { getCurrentVault } from '../api/getCurrentVault'
 import { initListener } from '../api/initListener'
+import { pearpassVaultClient } from '../instances'
 import { selectVault } from '../selectors/selectVault'
 import { selectVaults } from '../selectors/selectVaults'
 import { logger } from '../utils/logger'
@@ -59,7 +60,12 @@ import { logger } from '../utils/logger'
 export const useVault = ({ variables } = {}) => {
   const dispatch = useDispatch()
 
-  const { isLoading: isVaultsLoading } = useSelector(selectVaults)
+  const { isLoading: isVaultsLoading, data: vaultsData } =
+    useSelector(selectVaults)
+
+  // vaultsData may still be null when listener callbacks are registered.
+  const vaultsDataRef = useRef(vaultsData)
+  vaultsDataRef.current = vaultsData
 
   const {
     isLoading: isVaultLoading,
@@ -74,6 +80,22 @@ export const useVault = ({ variables } = {}) => {
     []
   )
 
+  // Copy peer renames into the per-device vault registry that backs useVaults.
+  const syncVaultNameToRegistry = async (vault) => {
+    if (!vault?.id) return
+    const localVault = (vaultsDataRef.current ?? []).find(
+      (v) => v.id === vault.id
+    )
+    if (!localVault || localVault.name === vault.name) return
+    const { records, devices, ...registryVault } = vault
+    try {
+      await pearpassVaultClient.vaultsAdd(`vault/${vault.id}`, registryVault)
+      await dispatch(getVaults())
+    } catch (err) {
+      logger.error('vault name sync failed', { err })
+    }
+  }
+
   const fetchVault = async (vaultId, params) => {
     const { payload: vault, error } = await dispatch(
       getVaultById({ vaultId: vaultId, params })
@@ -83,12 +105,17 @@ export const useVault = ({ variables } = {}) => {
       throw new Error('Error fetching vault')
     }
 
+    await syncVaultNameToRegistry(vault)
+
     await initListener({
       vaultId: vaultId,
       onUpdate: async () => {
         const current = await getCurrentVault()
         if (current) {
-          dispatch(getVaultById({ vaultId: current.id }))
+          const { payload: refreshed } = await dispatch(
+            getVaultById({ vaultId: current.id })
+          )
+          await syncVaultNameToRegistry(refreshed)
         }
         runActionScan().catch((err) =>
           logger.error('runActionScan failed', { err })

@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import { OTP_TYPE } from '../constants/otpType'
 import { addDevice } from '../actions/addDevice'
 import { createFolder } from '../actions/createFolder'
 import { createRecord } from '../actions/createRecord'
@@ -14,6 +13,7 @@ import { resetState } from '../actions/resetState'
 import { updateProtectedVault } from '../actions/updateProtectedVault'
 import { updateRecords } from '../actions/updateRecords'
 import { updateUnprotectedVault } from '../actions/updateUnprotectedVault'
+import { OTP_TYPE } from '../constants/otpType'
 import { logger } from '../utils/logger'
 
 const initialState = {

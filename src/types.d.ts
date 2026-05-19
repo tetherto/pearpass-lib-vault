@@ -24,7 +24,7 @@ export declare const ACTION_TYPES: {
 
 export declare const ACTIONS: Record<
   string,
-  { execute: (entry: unknown) => Promise<void> }
+  { execute: (_entry: unknown) => Promise<void> }
 >
 
 export interface BroadcastActionResult {
@@ -32,17 +32,17 @@ export interface BroadcastActionResult {
   failures: Array<{ targetDeviceId: string; error: Error }>
 }
 
-export declare function broadcastAction(action: {
+export declare function broadcastAction(_action: {
   type: string
   payload?: any
 }): Promise<BroadcastActionResult>
 
 export declare function broadcastDeleteVault(
-  vaultId: string
+  _vaultId: string
 ): Promise<BroadcastActionResult>
 
 export declare function deleteVaultLocal(
-  vaultId: string
+  _vaultId: string
 ): Promise<Array<unknown>>
 
 export declare function runActionScan(): Promise<void>
